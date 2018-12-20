@@ -1,0 +1,123 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sanitize.css/2.0.0/sanitize.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/ua-parser-js@0/dist/ua-parser.min.js"></script>
+  <style>
+    #wrapper {
+      padding: 10px;
+    }
+
+    .gpu,
+    .browser,
+    .os,
+    .device,
+    .cpu {
+      padding: 5px 10px;
+      border: 1px solid #777;
+      margin: 0 0 5px;
+    }
+
+    .gpu:before {
+      content: 'GPU情報';
+      display: block;
+      border-bottom: 1px dashed #000;
+      margin: 0 0 5px;
+      padding: 0 0 3px;
+    }
+
+    .browser:before {
+      content: 'ブラウザ情報';
+      display: block;
+      border-bottom: 1px dashed #000;
+      margin: 0 0 5px;
+      padding: 0 0 3px;
+    }
+
+    .os:before {
+      content: 'OS情報';
+      display: block;
+      border-bottom: 1px dashed #000;
+      margin: 0 0 5px;
+      padding: 0 0 3px;
+    }
+
+    .device:before {
+      content: 'デバイス情報';
+      display: block;
+      border-bottom: 1px dashed #000;
+      margin: 0 0 5px;
+      padding: 0 0 3px;
+    }
+
+    .cpu:before {
+      content: 'CPU情報';
+      display: block;
+      border-bottom: 1px dashed #000;
+      margin: 0 0 5px;
+      padding: 0 0 3px;
+    }
+
+  </style>
+</head>
+
+<body>
+  <div id="wrapper">
+  </div>
+  <canvas id="canvas" width="0" height="0"></canvas>
+
+  <script>
+    const wrap = document.getElementById('wrapper');
+    // UAParser
+    let parse = new UAParser();
+
+    // デバイス情報
+    let dv = parse.getDevice(),
+      box_0 = document.createElement('div');
+    box_0.classList.add('device');
+    box_0.innerHTML = (dv["model"] || "不明") + " / " + (dv["type"] || "不明") + " / " + (dv["vendor"] || "不明");
+    wrap.appendChild(box_0);
+
+    // OS情報
+    let os = parse.getOS(),
+      box_1 = document.createElement('div');
+    box_1.classList.add('os');
+    box_1.innerHTML = os["name"] + " " + os["version"];
+    wrap.appendChild(box_1);
+
+    // ブラウザ情報
+    let br = parse.getBrowser(),
+      box_2 = document.createElement('div');
+    box_2.classList.add('browser');
+    box_2.innerHTML = br["name"] + " " + br["version"];
+    wrap.appendChild(box_2);
+
+    // GPU情報
+    let canvas = document.getElementById("canvas"),
+      gl = canvas.getContext("experimental-webgl"),
+      renderInfo = gl.getExtension("WEBGL_debug_renderer_info");
+
+    if (renderInfo != null) {
+      let vendor = gl.getParameter(renderInfo.UNMASKED_VENDOR_WEBGL),
+        renderer = gl.getParameter(renderInfo.UNMASKED_RENDERER_WEBGL);
+
+      let box_3 = document.createElement('div');
+      box_3.classList.add('gpu');
+      box_3.innerHTML = vendor + "<br>" + renderer;
+      wrap.appendChild(box_3);
+    }
+
+    // CPU情報
+    let cpu = parse.getCPU(),
+      box_4 = document.createElement('div');
+    box_4.classList.add('cpu');
+    box_4.innerHTML = cpu["architecture"];
+    wrap.appendChild(box_4);
+
+  </script>
+</body>
+
+</html>
